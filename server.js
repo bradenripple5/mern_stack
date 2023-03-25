@@ -23,7 +23,7 @@ async function listDatabases(client) {
   return result;
   // console.log()
 }
-
+//change made to test mac connection to github
 convertURLtoJSON = (url) => {
   obj = {};
   url.split("&").forEach((e) => {
