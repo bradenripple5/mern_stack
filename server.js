@@ -15,6 +15,7 @@ uri =
 // Now that we have our URI, we can create an instance of MongoClient.
 
 var outsideResult = "";
+//making change to see if github dekstop works from Mac
 
 async function listDatabases(client) {
   databasesList = await client.db().admin().listDatabases();
