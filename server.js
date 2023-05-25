@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const port = 9010;
+const port = 1721;
 // app.use(express.static(__dirname + '/public'));
 const { MongoClient } = require("mongodb");
 
@@ -38,12 +38,13 @@ const client = new MongoClient(uri);
 client.connect();
 
 app.get("/", (req, res) => {
-  var dbo = db.db("myshinynewdb");
+  return "hello";
+  // var dbo = db.db("myshinynewdb");
 
-  request = req.url.substring(req.url.indexOf("?") + 1);
-  console.log(`request = ${convertURLtoJSON(request)}`);
-  var dbs = listDatabases(client);
-  res.send(outsideResult);
+  // request = req.url.substring(req.url.indexOf("?") + 1);
+  // console.log(`request = ${convertURLtoJSON(request)}`);
+  // var dbs = listDatabases(client);
+  // res.send(outsideResult);
 });
 
 app.get("/mongoRequest", (req, res) => {
@@ -67,4 +68,67 @@ app.get("/mongoRequest", (req, res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
+});
+
+
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const FacebookTokenStrategy = require('passport-facebook-token');
+require('dotenv').config();
+
+
+// Passport initialization and configuration
+app.use(passport.initialize());
+
+// Google authentication strategy
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: '/auth/google/callback'
+}, (accessToken, refreshToken, profile, done) => {
+  // Handle Google authentication logic here
+  // Save the user to the database if necessary
+  done(null, profile);
+}));
+
+// Facebook authentication strategy
+passport.use(new FacebookTokenStrategy({
+  clientID: process.env.FACEBOOK_CLIENT_ID,
+  clientSecret: process.env.FACEBOOK_CLIENT_SECRET
+}, (accessToken, refreshToken, profile, done) => {
+  // Handle Facebook authentication logic here
+  // Save the user to the database if necessary
+  done(null, profile);
+}));
+
+// Routes
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => {
+  // Redirect or send response after successful authentication
+  res.send('Authenticated with Google!');
+});
+
+app.post('/auth/facebook/token', passport.authenticate('facebook-token'), (req, res) => {
+  // Redirect or send response after successful authentication
+  res.send('Authenticated with Facebook!');
+});
+
+// Server start
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
+
+
+const mongoose = require('mongoose');
+
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost/mydatabase', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true
+}).then(() => {
+  console.log('Connected to MongoDB');
+}).catch((err) => {
+  console.error('Failed to connect to MongoDB', err);
+  process.exit(1);
 });
