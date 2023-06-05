@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
-const port = 1721;
+const mongoose = require('mongoose');
+const port = 3000;
 // app.use(express.static(__dirname + '/public'));
 const { MongoClient } = require("mongodb");
 
@@ -38,8 +39,9 @@ const client = new MongoClient(uri);
 client.connect();
 
 app.get("/", (req, res) => {
-  return "hello";
-  // var dbo = db.db("myshinynewdb");
+  res.sendfile(__dirname + "/index.html");
+  
+    // var dbo = db.db("myshinynewdb");
 
   // request = req.url.substring(req.url.indexOf("?") + 1);
   // console.log(`request = ${convertURLtoJSON(request)}`);
@@ -66,9 +68,6 @@ app.get("/mongoRequest", (req, res) => {
   res.send(outsideResult);
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
 
 
 const passport = require('passport');
@@ -119,16 +118,48 @@ app.listen(port, () => {
 });
 
 
-const mongoose = require('mongoose');
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost/mydatabase', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true
-}).then(() => {
-  console.log('Connected to MongoDB');
-}).catch((err) => {
-  console.error('Failed to connect to MongoDB', err);
-  process.exit(1);
+// // Connect to MongoDB
+// mongoose.connect('mongodb://localhost/mydatabase', {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+//   useCreateIndex: true
+// }).then(() => {
+//   console.log('Connected to MongoDB');
+// }).catch((err) => {
+//   console.error('Failed to connect to MongoDB', err);
+//   process.exit(1);
+// });
+
+const sse = new EventSource("public/index.html");
+
+/*asldfkajfsadf asdf
+ * This will listen only for events
+ * similar to the following:
+ *
+ * event: notice
+ * data: useful data
+ * id: someid
+ */
+sse.addEventListener("notice", (e) => {
+  console.log(e.data);
+});
+
+/*
+ * Similarly, this will listen for events
+ * with the field `event: update`
+ */
+sse.addEventListener("update", (e) => {
+  console.log(e.data);
+});
+
+/*
+ * The event "message" is a special case, as it
+ * will capture events without an event field
+ * as well as events that have the specific type
+ * `event: message` It will not trigger on any
+ * other event type.
+ */
+sse.addEventListener("message", (e) => {
+  console.log(e.data);
 });
