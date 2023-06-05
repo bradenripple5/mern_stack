@@ -1,0 +1,1 @@
+you must install mongo 4 to work on a linux machine unless it is newer
