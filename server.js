@@ -14,7 +14,7 @@ var uri =
 uri =
   "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000"; //&appName=mongosh+1.6.2"
 // Now that we have our URI, we can create an instance of MongoClient.
-
+// uri ="mongodb://localhost:27017/mydb"
 var outsideResult = "";
 //making change to see if github dekstop works from Mac
 
@@ -54,8 +54,11 @@ app.get("/mongoRequest", (req, res) => {
   console.log(`mongoRequest = ${convertURLtoJSON(request)}`);
   var dbs = listDatabases(client);
   console.log(outsideResult)
+  console.log("pre connection")
   client.connect(uri, function (err, db) {
-    if (err) throw err;
+    console.log("during connection before error message code")
+    if (err){console.log("error thrown"); throw err;}
+    console.log(uri)
     var dbo = client.db("myshinynewdb");
     var myobj = { name: "Fersh Avacoda Inc", address: "Highway 37" };
     dbo.collection("customers").insertOne(myobj, function (err, res) {
@@ -63,9 +66,8 @@ app.get("/mongoRequest", (req, res) => {
       console.log("1 document inserted");
       db.close();
     });
-    res.send("fosho")
   });
-
+  console.log("post connection")
   res.send(outsideResult);
 });
 
